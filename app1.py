@@ -37,7 +37,7 @@ def load_and_clean_data(file_path):
 
 # !!! UPDATE THIS PATH TO MATCH YOUR FILE LOCATION !!!
 try:
-    pc_price = load_and_clean_data("/Users/_jawaher/Desktop/ML/ML_1/laptopData.csv")
+    pc_price = load_and_clean_data("laptopData.csv")
 except Exception as e:
     st.error("Could not find laptopData.csv at the specified path. Please configure your absolute path on line 29.")
     st.stop()
