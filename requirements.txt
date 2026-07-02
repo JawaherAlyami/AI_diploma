@@ -1,7 +1,7 @@
-kagglehub
-pandas
 streamlit
-plotly
+pandas
 numpy
 scikit-learn
+plotly
+statsmodels
 scipy
