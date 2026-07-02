@@ -2,3 +2,6 @@ kagglehub
 pandas
 streamlit
 plotly
+numpy
+scikit-learn
+scipy
