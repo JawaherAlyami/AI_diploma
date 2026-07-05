@@ -111,7 +111,7 @@ scaler, pca_transformer, model_lr, model_rf, model_dt, encoded_cols, y_test, p_l
 st.title("💻 Laptop Market Analytics & Machine Learning Pipeline (USD)")
 st.markdown("An end-to-end framework parsing hardware configurations, converting Indian Rupee pricing tables natively to US Dollars ($), and running optimizations via PCA.")
 
-# Added unique key parameter to maintain session state stability across tab actions
+# FIXED: Removed the unsupported 'key' keyword to maintain backward compatibility with your local library environment
 tabs = st.tabs(["📋 Data Overview", "📊 Visual Explorations (EDA)", "⚙️ Preprocessing Summary", "🎯 Model Evaluation Metrics", "🔮 Live Value Predictor"])
 
 # --- TAB 1: DATA OVERVIEW ---
@@ -245,6 +245,12 @@ with tabs[4]:
             input_weight = st.slider("Chassis Mass (Weight in kg)", float(pc_price_encode['WeightWithoutUnit'].min()), float(pc_price_encode['WeightWithoutUnit'].max()), 2.0)
             input_inches = st.slider("Diagonal Screen Boundary (Inches)", float(pc_price['Inches'].min()), float(pc_price['Inches'].max()), 15.6)
             
+        st.markdown("---")
+        selected_model_name = st.selectbox(
+            "Select Machine Learning Algorithm for Inference",
+            ["Optimized Random Forest", "Tuned Decision Tree Splitter", "Linear Regression Baseline"]
+        )
+            
         # The submit button triggers calculation without resetting layout focus
         submit_button = st.form_submit_button(label="Generate Value Estimation Output")
         
@@ -279,14 +285,17 @@ with tabs[4]:
         scaled_input = scaler.transform(input_df)
         pca_input = pca_transformer.transform(scaled_input)
         
-        # Run inferences
-        out_lr = model_lr.predict(pca_input)[0]
-        out_rf = model_rf.predict(pca_input)[0]
-        out_dt = model_dt.predict(pca_input)[0]
-        
-        # Display predictions side-by-side cleanly rounded to 2 decimals
+        # Display predictions conditionally based on the chosen algorithm option
         st.markdown("### Estimation Results Analysis")
-        res_col1, res_col2, res_col3 = st.columns(3)
-        res_col1.metric("Optimized Random Forest Prediction", f"${max(0.0, round(out_rf, 2)):,.2f}")
-        res_col2.metric("Decision Tree Prediction", f"${max(0.0, round(out_dt, 2)):,.2f}")
-        res_col3.metric("Linear Regression Prediction", f"${max(0.0, round(out_lr, 2)):,.2f}")
+        
+        if selected_model_name == "Optimized Random Forest":
+            out_rf = model_rf.predict(pca_input)[0]
+            st.metric("Optimized Random Forest Prediction", f"${max(0.0, round(out_rf, 2)):,.2f}")
+            
+        elif selected_model_name == "Tuned Decision Tree Splitter":
+            out_dt = model_dt.predict(pca_input)[0]
+            st.metric("Decision Tree Prediction", f"${max(0.0, round(out_dt, 2)):,.2f}")
+            
+        elif selected_model_name == "Linear Regression Baseline":
+            out_lr = model_lr.predict(pca_input)[0]
+            st.metric("Linear Regression Prediction", f"${max(0.0, round(out_lr, 2)):,.2f}")
